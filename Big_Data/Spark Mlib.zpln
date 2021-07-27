@@ -1,0 +1,298 @@
+﻿{
+  "paragraphs": [
+    {
+      "text": "%sh\nhadoop fs -ls\n",
+      "user": "admin",
+      "dateUpdated": "2021-07-23T12:30:26+0000",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/sh",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1627043417513_770887713",
+      "id": "paragraph_1627043417513_770887713",
+      "dateCreated": "2021-07-23T12:30:17+0000",
+      "status": "FINISHED",
+      "focus": true,
+      "$$hashKey": "object:5508971",
+      "dateFinished": "2021-07-23T12:30:28+0000",
+      "dateStarted": "2021-07-23T12:30:26+0000",
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "Found 4 items\n-rw-r--r--   1 hadoop supergroup    3518607 2021-05-22 00:51 adult.data\ndrwxr-xr-x   - hadoop supergroup          0 2021-05-22 02:38 input\ndrwxr-xr-x   - hadoop supergroup          0 2021-05-22 02:39 out\ndrwxr-xr-x   - hadoop supergroup          0 2021-07-20 22:31 ws\n"
+          }
+        ]
+      }
+    },
+    {
+      "user": "admin",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/python",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://hadoop24.cs.smu.ca:4040/jobs/job?id=3",
+              "$$hashKey": "object:5510180"
+            },
+            {
+              "jobUrl": "http://hadoop24.cs.smu.ca:4040/jobs/job?id=4",
+              "$$hashKey": "object:5510181"
+            },
+            {
+              "jobUrl": "http://hadoop24.cs.smu.ca:4040/jobs/job?id=5",
+              "$$hashKey": "object:5510182"
+            },
+            {
+              "jobUrl": "http://hadoop24.cs.smu.ca:4040/jobs/job?id=6",
+              "$$hashKey": "object:5510183"
+            },
+            {
+              "jobUrl": "http://hadoop24.cs.smu.ca:4040/jobs/job?id=7",
+              "$$hashKey": "object:5510184"
+            },
+            {
+              "jobUrl": "http://hadoop24.cs.smu.ca:4040/jobs/job?id=8",
+              "$$hashKey": "object:5510185"
+            },
+            {
+              "jobUrl": "http://hadoop24.cs.smu.ca:4040/jobs/job?id=9",
+              "$$hashKey": "object:5510186"
+            },
+            {
+              "jobUrl": "http://hadoop24.cs.smu.ca:4040/jobs/job?id=10",
+              "$$hashKey": "object:5510187"
+            },
+            {
+              "jobUrl": "http://hadoop24.cs.smu.ca:4040/jobs/job?id=11",
+              "$$hashKey": "object:5510188"
+            },
+            {
+              "jobUrl": "http://hadoop24.cs.smu.ca:4040/jobs/job?id=12",
+              "$$hashKey": "object:5510189"
+            },
+            {
+              "jobUrl": "http://hadoop24.cs.smu.ca:4040/jobs/job?id=13",
+              "$$hashKey": "object:5510190"
+            },
+            {
+              "jobUrl": "http://hadoop24.cs.smu.ca:4040/jobs/job?id=14",
+              "$$hashKey": "object:5510191"
+            },
+            {
+              "jobUrl": "http://hadoop24.cs.smu.ca:4040/jobs/job?id=15",
+              "$$hashKey": "object:5510192"
+            },
+            {
+              "jobUrl": "http://hadoop24.cs.smu.ca:4040/jobs/job?id=16",
+              "$$hashKey": "object:5510193"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1627042792775_2056222305",
+      "id": "paragraph_1627042792775_2056222305",
+      "dateCreated": "2021-07-23T12:19:52+0000",
+      "status": "FINISHED",
+      "focus": true,
+      "$$hashKey": "object:5508623",
+      "text": "%pyspark\nfrom pyspark.ml import Pipeline\nfrom pyspark.ml.feature import OneHotEncoder\nfrom pyspark.ml.classification import RandomForestClassifier\nfrom pyspark.ml.feature import IndexToString, StringIndexer, VectorIndexer, VectorAssembler\nfrom pyspark.ml.evaluation import MulticlassClassificationEvaluator\nfrom pyspark.sql import functions as F\nfrom pyspark.ml.tuning import CrossValidator\nfrom pyspark.ml.tuning import ParamGridBuilder\n\n\n# initial pipline list for creating real pipline\npipe_stages = []\n\n# Load and parse the data file, converting it to a DataFrame.Because the original dataset is over 1GB, this load will limit the loading rows within 1000000/2906610\ndata = spark.read.format(\"csv\").option(\"inferSchema\", \"true\").option(\"header\", \"true\").load(\"ws/US_Accidents_Dec20_Updated.csv\").limit(1000000)\n\n# drop out the column we don't need\ncols_to_drop = ['ID','Start_Time','End_Time','Start_Lat','Start_Lng','End_Lat','Country','State','End_Lng','Description','Street','Number','Timezone',\n                'Weather_Timestamp','Zipcode','County','City','Airport_Code','Precipitation(in)','Turning_Loop'] \ndata = data.drop(*cols_to_drop)\n\n# Replace nan with Nulls,there are some value in dataset are nan which means data lossing\n# First deal with the boolean type column\ncolumns = data.dtypes\nfor cols, typ in columns:\n    if typ != 'boolean':\n        data = data.withColumn(cols,F.when(F.isnan(F.col(cols)),None).otherwise(F.col(cols)))\n        \n# Except the \"Severity\" column, which will be the label, other columns will be filled when occurs missing value\nlabel = 'Severity'\nstring_cols =  [cols[0] for cols in data.dtypes if cols[1] == \"string\" ]\nnum_cols = [cols[0] for cols in data.dtypes if cols[1] == \"int\" or cols[1] == \"double\" ]\nnum_cols.remove(label)\nbool_cols = [cols[0] for cols in data.dtypes if cols[1] == \"boolean\"]\n# fill missing value\ndata = data.fillna(\"unknown\",string_cols)\ndata = data.fillna(0,num_cols)\n\n# convert boolean columns to string for indexing\ndata = data.withColumn(\"Amenity\", data[\"Amenity\"].cast(\"string\")).withColumn(\"Bump\", data[\"Bump\"].cast(\"string\")).withColumn(\"Crossing\", data[\"Crossing\"].cast(\"string\")).withColumn(\"Give_Way\", data[\"Give_Way\"].cast(\"string\")).withColumn(\"Junction\", data[\"Junction\"].cast(\"string\")).withColumn(\"No_Exit\", data[\"No_Exit\"].cast(\"string\")).withColumn(\"Railway\", data[\"Railway\"].cast(\"string\")).withColumn(\"Roundabout\", data[\"Roundabout\"].cast(\"string\")).withColumn(\"Station\", data[\"Station\"].cast(\"string\")).withColumn(\"Stop\", data[\"Stop\"].cast(\"string\")).withColumn(\"Traffic_Calming\", data[\"Traffic_Calming\"].cast(\"string\")).withColumn(\"Traffic_Signal\", data[\"Traffic_Signal\"].cast(\"string\")).withColumn(\"Temperature(F)\", data[\"Temperature(F)\"].cast(\"double\")).withColumn(\"Wind_Chill(F)\", data[\"Wind_Chill(F)\"].cast(\"double\")).withColumn(\"Humidity(%)\", data[\"Humidity(%)\"].cast(\"double\")).withColumn(\"Pressure(in)\", data[\"Pressure(in)\"].cast(\"double\")).withColumn(\"Visibility(mi)\", data[\"Visibility(mi)\"].cast(\"double\")).withColumn(\"Wind_Speed(mph)\", data[\"Wind_Speed(mph)\"].cast(\"double\"))\n\n# Index labels, adding metadata to the label column.\n# Fit on whole dataset to include all labels in index.\nlabelIndexer  = StringIndexer(inputCol=\"Severity\", outputCol=\"label\")\npipe_stages += [labelIndexer]\n\n#define columns what will be used for prediction of income in our model\n\n#which of the columns are numeric?\nnumeric = [\"Distance(mi)\", \"Temperature(F)\",\"Wind_Chill(F)\",\"Humidity(%)\",\"Pressure(in)\",\"Visibility(mi)\",\"Wind_Speed(mph)\"]\n\n#which of the columns need to be converted to numeric format?\nnominal = [\"Wind_Direction\", \"Weather_Condition\",   \"Amenity\", \"Bump\", \"Crossing\", \"Give_Way\", \"Junction\",\"No_Exit\",\"Railway\",\"Roundabout\",\"Station\",\"Stop\",\"Traffic_Calming\",\"Traffic_Signal\",\"Sunrise_Sunset\",\"Civil_Twilight\",\"Nautical_Twilight\",\"Astronomical_Twilight\"]\nnominal_idx = list(map(lambda c: c + \"Idx\", nominal))\n\n#create indexer to create index columns\nindexer = StringIndexer(inputCols=nominal, outputCols=nominal_idx).setHandleInvalid(\"skip\")\npipe_stages += [indexer]\n\n#create OneHot encoder to encode indexed columns to vectors     \nout_names = list(map(lambda c: c + \"Vec\", nominal_idx))\nohe = OneHotEncoder(inputCols=nominal_idx, outputCols=out_names)\npipe_stages += [ohe]\n\n# now assemble all columns into a feature vector\nassembler = VectorAssembler(inputCols=out_names + numeric, outputCol=\"indexedFeatures\").setHandleInvalid(\"keep\")\npipe_stages += [assembler]\n\n# create a Random Forest classifier \nrf = RandomForestClassifier(labelCol=\"label\", featuresCol=\"indexedFeatures\", numTrees=10)\n# decisiontree classifier\n# dt = DecisionTreeClassifier(labelCol=\"label\", featuresCol=\"indexedFeatures\")\npipe_stages += [rf]\n\n\n#create a pipeline\npipeline = Pipeline(stages=pipe_stages)\n\n#split data into training and test\n(trainingData, testData) = data.randomSplit([0.75, 0.25], 1)\nmodel = pipeline.fit(trainingData)\n\npred = model.transform(testData)\npred.select(\"Severity\",\"prediction\",\"Distance(mi)\", \"Temperature(F)\",\"Wind_Chill(F)\",\"Humidity(%)\",\"Pressure(in)\",\"Visibility(mi)\",\"Wind_Speed(mph)\",\"Wind_Direction\", \"Weather_Condition\",   \"Amenity\", \"Bump\", \"Crossing\", \"Give_Way\", \"Junction\",\"No_Exit\",\"Railway\",\"Roundabout\",\"Station\",\"Stop\",\"Traffic_Calming\",\"Traffic_Signal\",\"Sunrise_Sunset\",\"Civil_Twilight\",\"Nautical_Twilight\",\"Astronomical_Twilight\").show(3)\n\n\n#Evaluate model - gives AUC (the higher value is better)\nevaluator = MulticlassClassificationEvaluator()\nevaluator.evaluate(pred)",
+      "dateUpdated": "2021-07-23T12:54:19+0000",
+      "dateFinished": "2021-07-23T12:43:06+0000",
+      "dateStarted": "2021-07-23T12:34:25+0000",
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "+--------+----------+------------+--------------+-------------+-----------+------------+--------------+---------------+--------------+-----------------+-------+-----+--------+--------+--------+-------+-------+----------+-------+-----+---------------+--------------+--------------+--------------+-----------------+---------------------+\n|Severity|prediction|Distance(mi)|Temperature(F)|Wind_Chill(F)|Humidity(%)|Pressure(in)|Visibility(mi)|Wind_Speed(mph)|Wind_Direction|Weather_Condition|Amenity| Bump|Crossing|Give_Way|Junction|No_Exit|Railway|Roundabout|Station| Stop|Traffic_Calming|Traffic_Signal|Sunrise_Sunset|Civil_Twilight|Nautical_Twilight|Astronomical_Twilight|\n+--------+----------+------------+--------------+-------------+-----------+------------+--------------+---------------+--------------+-----------------+-------+-----+--------+--------+--------+-------+-------+----------+-------+-----+---------------+--------------+--------------+--------------+-----------------+---------------------+\n|       1|       0.0|         0.0|          null|         null|       null|        null|          null|           null|       unknown|          unknown|  false|false|   false|   false|   false|  false|  false|     false|  false|false|          false|         false|           Day|           Day|              Day|                  Day|\n|       1|       0.0|         0.0|          null|         null|       null|        null|          null|           null|       unknown|          unknown|  false|false|   false|   false|   false|  false|  false|     false|  false| true|          false|         false|         Night|         Night|            Night|                Night|\n|       1|       0.0|         0.0|          null|         null|       null|        null|          null|           null|       unknown|          unknown|  false|false|    true|   false|   false|  false|  false|     false|  false|false|          false|          true|           Day|           Day|              Day|                  Day|\n+--------+----------+------------+--------------+-------------+-----------+------------+--------------+---------------+--------------+-----------------+-------+-----+--------+--------+--------+-------+-------+----------+-------+-----+---------------+--------------+--------------+--------------+-----------------+---------------------+\nonly showing top 3 rows\n\n0.6203190571538996\n"
+          }
+        ]
+      }
+    },
+    {
+      "text": "%pyspark\nfrom pyspark.ml.tuning import ParamGridBuilder\nparamGrid = (ParamGridBuilder()\n             .addGrid(rf.maxDepth, [10,20,30])\n             .addGrid(rf.numTrees, [10,15,20])\n             .build())\n        \n# decision tree parameter  \n# paramGrid = (ParamGridBuilder()\n#              .addGrid(dt.maxBins, [10,20,30])\n#              .build())\n",
+      "user": "admin",
+      "dateUpdated": "2021-07-23T12:55:10+0000",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/python",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1627044618465_116871730",
+      "id": "paragraph_1627044618465_116871730",
+      "dateCreated": "2021-07-23T12:50:18+0000",
+      "status": "READY",
+      "focus": true,
+      "$$hashKey": "object:5509834"
+    },
+    {
+      "text": "%pyspark\n(trainingData, testData) = data.randomSplit([0.75, 0.25], 1)\nevaluator = MulticlassClassificationEvaluator()\ncv = CrossValidator(estimator=pipeline, \n                    estimatorParamMaps=paramGrid, \n                    evaluator=evaluator,\n                    numFolds=5)\n\nmodel = cv.fit(trainingData)\npredCv = model.transform(testData)\nevaluator.evaluate(predCv)",
+      "user": "admin",
+      "dateUpdated": "2021-07-23T12:51:08+0000",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/python",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1627044665499_814409546",
+      "id": "paragraph_1627044665499_814409546",
+      "dateCreated": "2021-07-23T12:51:05+0000",
+      "status": "READY",
+      "focus": true,
+      "$$hashKey": "object:5509903"
+    },
+    {
+      "text": "%pyspark\nmodel.bestModel.stages[-1]\n",
+      "user": "admin",
+      "dateUpdated": "2021-07-23T12:51:24+0000",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/python",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1627044682036_1630024212",
+      "id": "paragraph_1627044682036_1630024212",
+      "dateCreated": "2021-07-23T12:51:22+0000",
+      "status": "READY",
+      "focus": true,
+      "$$hashKey": "object:5509972"
+    },
+    {
+      "text": "%pyspark\nmodel.bestModel.stages[-1].getMaxDepth()",
+      "user": "admin",
+      "dateUpdated": "2021-07-23T12:51:42+0000",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/python",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1627044691289_557982326",
+      "id": "paragraph_1627044691289_557982326",
+      "dateCreated": "2021-07-23T12:51:31+0000",
+      "status": "READY",
+      "focus": true,
+      "$$hashKey": "object:5510041"
+    }
+  ],
+  "name": "Spark Mlib",
+  "id": "2GBVD4THV",
+  "defaultInterpreterGroup": "spark",
+  "version": "0.9.0",
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {},
+  "config": {
+    "isZeppelinNotebookCronEnable": false,
+    "looknfeel": "default",
+    "personalizedMode": "false"
+  },
+  "info": {},
+  "path": "/Spark Mlib"
+}
